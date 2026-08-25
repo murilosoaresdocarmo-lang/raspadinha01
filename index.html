@@ -33,7 +33,7 @@ body {
     width: 100%;
     max-width: 520px;
     min-height: 100vh;
-    padding: 45px 20px 35px;
+    padding: 42px 20px 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,7 +41,7 @@ body {
 }
 
 .title {
-    margin-top: 15px;
+    margin-top: 10px;
     color: #76645e;
     font-size: 25px;
     line-height: 1.25;
@@ -50,7 +50,7 @@ body {
 
 .subtitle {
     margin: 12px auto 25px;
-    max-width: 360px;
+    max-width: 370px;
     color: #927e77;
     font-size: 17px;
     line-height: 1.5;
@@ -61,7 +61,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 .cell {
@@ -87,14 +87,15 @@ body {
     background: linear-gradient(145deg, #fffaf8, #f4dddd);
 }
 
-.result .symbol {
-    font-size: 38px;
-    margin-bottom: 3px;
+.symbol {
+    font-size: 42px;
+    line-height: 1;
+    margin-bottom: 7px;
 }
 
-.result .word {
-    font-size: 13px;
-    color: #92736d;
+.label {
+    font-size: 11px;
+    color: #a08a83;
     letter-spacing: 1px;
 }
 
@@ -110,8 +111,8 @@ canvas {
 
 .final {
     display: none;
-    margin-top: 28px;
-    animation: aparecer .8s ease;
+    margin-top: 27px;
+    animation: aparecer .9s ease;
 }
 
 .final.show {
@@ -121,32 +122,34 @@ canvas {
 .final h2 {
     margin: 0;
     color: #8d6d67;
-    font-size: 27px;
+    font-size: 29px;
     font-weight: normal;
 }
 
 .final p {
-    margin-top: 8px;
+    margin: 8px auto 0;
+    max-width: 340px;
     color: #9a817b;
     font-size: 16px;
+    line-height: 1.4;
 }
 
 @keyframes aparecer {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(15px) scale(.95);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
 @media (max-height: 700px) {
 
     .card {
-        padding-top: 25px;
+        padding-top: 22px;
     }
 
     .title {
@@ -154,12 +157,20 @@ canvas {
     }
 
     .subtitle {
-        margin-bottom: 15px;
+        margin-bottom: 14px;
         font-size: 15px;
     }
 
     .board {
         gap: 10px;
+    }
+
+    .symbol {
+        font-size: 34px;
+    }
+
+    .final {
+        margin-top: 15px;
     }
 }
 </style>
@@ -182,7 +193,10 @@ canvas {
 
     <div class="final" id="final">
         <h2>É ALICE! 🩷</h2>
-        <p>Uma princesinha está chegando para completar nossa família.</p>
+        <p>
+            Uma princesinha está chegando
+            para completar nossa família. ✨
+        </p>
     </div>
 
 </main>
@@ -193,24 +207,42 @@ const board = document.getElementById("board");
 const final = document.getElementById("final");
 
 /*
-    Todos os círculos serão Alice.
-    O nome NÃO fica escrito no círculo dourado.
-    Ele só aparece depois que a raspadinha for concluída.
+    POSIÇÕES:
+
+       1     2     3
+       4     5     6
+       7     8     9
+
+    A SEQUÊNCIA VENCEDORA É:
+
+       🩵    🩷    🩵
+       🩵    🩷    🩵
+       🩷    🩷    🩵
+
+    Portanto:
+    2 + 5 + 8 = MENINA
 */
 
+// 0 = menino
+// 1 = menina
+
 const resultados = [
-    "🩷",
-    "🌸",
-    "🎀",
-    "🩷",
-    "🌷",
-    "🎀",
-    "🩷",
-    "🌸",
-    "🎀"
+    "🩵",  // 1
+    "🩷",  // 2  ← VENCEDOR
+    "🩵",  // 3
+
+    "🩵",  // 4
+    "🩷",  // 5  ← VENCEDOR
+    "🩵",  // 6
+
+    "🩷",  // 7
+    "🩷",  // 8  ← VENCEDOR
+    "🩵"   // 9
 ];
 
-let raspados = 0;
+const vencedores = [1, 4, 7];
+
+let revelados = [];
 
 resultados.forEach((simbolo, index) => {
 
@@ -222,7 +254,7 @@ resultados.forEach((simbolo, index) => {
 
     result.innerHTML = `
         <div class="symbol">${simbolo}</div>
-        <div class="word">SURPRESA</div>
+        <div class="label">SURPRESA</div>
     `;
 
     cell.appendChild(result);
@@ -235,12 +267,11 @@ resultados.forEach((simbolo, index) => {
     const ctx = canvas.getContext("2d");
 
     let desenhando = false;
-    let jaContabilizado = false;
+    let concluido = false;
 
     function ajustarCanvas() {
 
         const tamanho = cell.getBoundingClientRect().width;
-
         const dpr = window.devicePixelRatio || 1;
 
         canvas.width = tamanho * dpr;
@@ -266,6 +297,7 @@ resultados.forEach((simbolo, index) => {
         ctx.fillStyle = gradiente;
 
         ctx.beginPath();
+
         ctx.arc(
             tamanho / 2,
             tamanho / 2,
@@ -278,7 +310,7 @@ resultados.forEach((simbolo, index) => {
 
         ctx.globalCompositeOperation = "source-over";
 
-        ctx.fillStyle = "rgba(255,255,255,.22)";
+        ctx.fillStyle = "rgba(255,255,255,.28)";
         ctx.font = "bold 13px Georgia";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -308,7 +340,6 @@ resultados.forEach((simbolo, index) => {
 
             x = e.clientX - rect.left;
             y = e.clientY - rect.top;
-
         }
 
         ctx.globalCompositeOperation = "destination-out";
@@ -326,12 +357,11 @@ resultados.forEach((simbolo, index) => {
         ctx.fill();
 
         verificarRaspagem();
-
     }
 
     function verificarRaspagem() {
 
-        if (jaContabilizado) return;
+        if (concluido) return;
 
         const largura = canvas.width;
         const altura = canvas.height;
@@ -345,7 +375,11 @@ resultados.forEach((simbolo, index) => {
 
         let transparentes = 0;
 
-        for (let i = 3; i < dados.length; i += 4) {
+        for (
+            let i = 3;
+            i < dados.length;
+            i += 4
+        ) {
 
             if (dados[i] < 80) {
                 transparentes++;
@@ -356,35 +390,57 @@ resultados.forEach((simbolo, index) => {
             transparentes / (dados.length / 4);
 
         /*
-            Quando aproximadamente 35% do círculo
-            estiver raspado, consideramos concluído.
+            Consideramos o círculo raspado
+            quando aproximadamente 35% foi removido.
         */
 
         if (porcentagem > 0.35) {
 
-            jaContabilizado = true;
-            raspados++;
+            concluido = true;
 
             canvas.style.pointerEvents = "none";
 
-            if (raspados >= 5) {
-
-                setTimeout(() => {
-
-                    final.classList.add("show");
-
-                }, 500);
-
+            if (!revelados.includes(index)) {
+                revelados.push(index);
             }
 
+            verificarSequencia();
         }
     }
+
+    function verificarSequencia() {
+
+        /*
+            Só interessa saber se os círculos
+            2, 5 e 8 foram revelados.
+
+            No código os índices são:
+            1, 4 e 7
+        */
+
+        const ganhou = vencedores.every(
+            posicao => revelados.includes(posicao)
+        );
+
+        if (ganhou) {
+
+            setTimeout(() => {
+
+                final.classList.add("show");
+
+            }, 500);
+        }
+    }
+
+    // MOUSE
 
     canvas.addEventListener(
         "mousedown",
         (e) => {
+
             desenhando = true;
             raspar(e);
+
         }
     );
 
@@ -402,15 +458,21 @@ resultados.forEach((simbolo, index) => {
     window.addEventListener(
         "mouseup",
         () => {
+
             desenhando = false;
+
         }
     );
+
+    // CELULAR
 
     canvas.addEventListener(
         "touchstart",
         (e) => {
+
             desenhando = true;
             raspar(e);
+
         },
         { passive: false }
     );
@@ -430,11 +492,16 @@ resultados.forEach((simbolo, index) => {
     canvas.addEventListener(
         "touchend",
         () => {
+
             desenhando = false;
+
         }
     );
 
-    setTimeout(ajustarCanvas, 100);
+    setTimeout(
+        ajustarCanvas,
+        100
+    );
 
     window.addEventListener(
         "resize",
