@@ -19,68 +19,66 @@
     </main>
 
     <script>
-        const board = document.getElementById('board');
-        // Define a sequência de respostas ocultas (exemplo equilibrado)
-        const premios = ['mateus', 'alice', 'mateus', 'alice', 'mateus', 'alice', 'mateus', 'alice', 'mateus'];
-        
-        // Links das imagens dos resultados que ficam escondidas sob a raspadinha
-        const imagensResultado = {
-            mateus: 'https://icons8.com', // Substitua pelo link do ícone do Mateus se tiver
-            alice: 'https://icons8.com'    // Substitua pelo link do ícone da Alice se tiver
-        };
-
-        premios.forEach(premio => {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            // Define o fundo da célula com o resultado oculto antes de raspar
-            cell.style.backgroundImage = url('${imagensResultado[premio]}');
+        window.addEventListener('load', () => {
+            const board = document.getElementById('board');
+            const premios = ['mateus', 'alice', 'mateus', 'alice', 'mateus', 'alice', 'mateus', 'alice', 'mateus'];
             
-            const canvas = document.createElement('canvas');
-            canvas.className = 'canvas';
-            cell.appendChild(canvas);
-            board.appendChild(cell);
+            const imagensResultado = {
+                mateus: 'https://icons8.com', 
+                alice: 'https://icons8.com'    
+            };
 
-            const ctx = canvas.getContext('2d');
-            
-            // Desenha a bolinha dourada interativa por cima
-            function initCanvas() {
-                const size = canvas.offsetWidth || 110;
-                canvas.width = size;
-                canvas.height = size;
+            premios.forEach(premio => {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.style.backgroundImage = url('${imagensResultado[premio]}');
                 
-                // Cria efeito dourado na bolinha digital
-                const gradient = ctx.createLinearGradient(0, 0, size, size);
-                gradient.addColorStop(0, '#e5c158');
-                gradient.addColorStop(0.5, '#b8860b');
-                gradient.addColorStop(1, '#f3e195');
+                const canvas = document.createElement('canvas');
+                canvas.className = 'canvas';
+                cell.appendChild(canvas);
+                board.appendChild(cell);
+
+                const ctx = canvas.getContext('2d');
                 
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
-                ctx.fill();
-            }
+                function initCanvas() {
+                    const size = canvas.offsetWidth || 110;
+                    canvas.width = size;
+                    canvas.height = size;
+                    
+                    const gradient = ctx.createLinearGradient(0, 0, size, size);
+                    gradient.addColorStop(0, '#e5c158');
+                    gradient.addColorStop(0.5, '#b8860b');
+                    gradient.addColorStop(1, '#f3e195');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
 
-            // Lógica para raspar com o dedo ou mouse
-            function scratch(e) {
-                const rect = canvas.getBoundingClientRect();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                const x = clientX - rect.left;
-                const y = clientY - rect.top;
+                function scratch(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const clientX = e.touches ? e.touches.clientX : e.clientX;
+                    const clientY = e.touches ? e.touches.clientY : e.clientY;
+                    const x = clientX - rect.left;
+                    const y = clientY - rect.top;
 
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.beginPath();
-                ctx.arc(x, y, 20, 0, Math.PI * 2);
-                ctx.fill();
-            }
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 25, 0, Math.PI * 2);
+                    ctx.fill();
+                }
 
-            canvas.addEventListener('mousemove', (e) => { if(e.buttons === 1) scratch(e); });
-            canvas.addEventListener('touchstart', scratch);
-            canvas.addEventListener('touchmove', scratch);
-            
-            // Inicializa após renderizar na tela
-            setTimeout(initCanvas, 100);
-            window.addEventListener('resize', initCanvas);
+                canvas.addEventListener('mousemove', (e) => { if(e.buttons === 1) scratch(e); });
+                canvas.addEventListener('touchstart', (e) => { scratch(e); });
+                canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    scratch(e);
+                }, { passive: false });
+                
+                setTimeout(initCanvas, 300);
+                window.addEventListener('resize', initCanvas);
+            });
         });
     </script>
 </body>
