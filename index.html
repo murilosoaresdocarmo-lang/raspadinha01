@@ -2,175 +2,201 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Nossa Família está crescendo</title>
+<title>Raspadinha - Alice</title>
 
 <style>
 * {
     box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
 }
 
 body {
-    background: linear-gradient(180deg, #f8eeee, #f2e3e3);
+    margin: 0;
+    min-height: 100vh;
     font-family: Georgia, "Times New Roman", serif;
+    background: linear-gradient(180deg, #fffaf8, #f9f4f1);
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
+    color: #665d5a;
 }
 
-.card {
+.container {
     width: 100%;
-    max-width: 520px;
+    max-width: 430px;
     min-height: 100vh;
-    padding: 42px 20px 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 28px 18px 35px;
     text-align: center;
+    position: relative;
 }
 
-.title {
-    margin-top: 10px;
-    color: #76645e;
+/* desenhos decorativos */
+.decor {
+    position: absolute;
+    font-size: 28px;
+    opacity: 0.22;
+    user-select: none;
+    pointer-events: none;
+}
+
+.decor1 { top: 30px; left: 18px; }
+.decor2 { top: 115px; right: 18px; }
+.decor3 { top: 310px; left: 10px; }
+.decor4 { top: 410px; right: 12px; }
+.decor5 { bottom: 90px; left: 20px; }
+.decor6 { bottom: 45px; right: 20px; }
+
+h1 {
+    margin: 10px 0 8px;
     font-size: 25px;
-    line-height: 1.25;
     font-weight: normal;
+    color: #776b67;
 }
 
 .subtitle {
-    margin: 12px auto 25px;
-    max-width: 370px;
-    color: #927e77;
     font-size: 17px;
     line-height: 1.5;
+    margin: 0 auto 25px;
+    max-width: 350px;
 }
 
-.board {
-    width: min(92vw, 390px);
+.subtitle strong {
+    font-weight: normal;
+    color: #9c8880;
+}
+
+.instructions {
+    font-size: 14px;
+    color: #a49792;
+    margin-bottom: 18px;
+}
+
+/* grade */
+.game {
+    width: min(88vw, 350px);
+    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-top: 8px;
+    gap: 12px;
 }
 
-.cell {
+/* cada quadrado */
+.card {
     position: relative;
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    border-radius: 18px;
     overflow: hidden;
-    background: #fff9f7;
+    background: #fff;
     box-shadow:
-        0 5px 12px rgba(100, 70, 60, 0.15),
-        inset 0 0 0 2px rgba(255,255,255,.8);
+        0 5px 15px rgba(100, 80, 70, 0.10),
+        inset 0 0 0 1px rgba(170, 140, 125, 0.15);
 }
 
-.result {
+/* imagem escondida */
+.symbol {
     position: absolute;
     inset: 0;
     display: flex;
-    justify-content: center;
     align-items: center;
-    flex-direction: column;
-    border-radius: 50%;
-    background: linear-gradient(145deg, #fffaf8, #f4dddd);
+    justify-content: center;
+    font-size: 43px;
+    background: #fffdfb;
 }
 
-.symbol {
-    font-size: 42px;
-    line-height: 1;
-    margin-bottom: 7px;
-}
-
-.label {
-    font-size: 11px;
-    color: #a08a83;
-    letter-spacing: 1px;
-}
-
+/* canvas da raspadinha */
 canvas {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    display: block;
     touch-action: none;
     cursor: pointer;
 }
 
-.final {
+/* mensagem final */
+.reveal {
     display: none;
-    margin-top: 27px;
-    animation: aparecer .9s ease;
+    margin-top: 25px;
+    padding: 25px 18px;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.88);
+    box-shadow: 0 8px 25px rgba(120, 90, 80, 0.13);
+    animation: aparecer 1.2s ease forwards;
 }
 
-.final.show {
+.reveal.show {
     display: block;
 }
 
-.final h2 {
-    margin: 0;
-    color: #8d6d67;
-    font-size: 29px;
-    font-weight: normal;
+.reveal .small {
+    font-size: 18px;
+    color: #8d7c77;
 }
 
-.final p {
-    margin: 8px auto 0;
-    max-width: 340px;
-    color: #9a817b;
-    font-size: 16px;
-    line-height: 1.4;
+.reveal h2 {
+    margin: 8px 0;
+    font-size: 40px;
+    font-weight: normal;
+    letter-spacing: 4px;
+    color: #d895a7;
+}
+
+.reveal p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+.heart {
+    font-size: 30px;
+    margin-top: 10px;
 }
 
 @keyframes aparecer {
     from {
         opacity: 0;
-        transform: translateY(15px) scale(.95);
+        transform: translateY(15px) scale(.96);
     }
-
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
 }
 
-@media (max-height: 700px) {
+/* confetes */
+.confetti {
+    position: fixed;
+    top: -20px;
+    pointer-events: none;
+    z-index: 50;
+    animation: cair linear forwards;
+}
 
-    .card {
-        padding-top: 22px;
+@keyframes cair {
+    to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 360px) {
+    .game {
+        width: 92vw;
+        gap: 8px;
     }
 
-    .title {
+    h1 {
         font-size: 22px;
     }
 
     .subtitle {
-        margin-bottom: 14px;
         font-size: 15px;
     }
 
-    .board {
-        gap: 10px;
-    }
-
     .symbol {
-        font-size: 34px;
-    }
-
-    .final {
-        margin-top: 15px;
+        font-size: 36px;
     }
 }
 </style>
@@ -178,160 +204,215 @@ canvas {
 
 <body>
 
-<main class="card">
+<div class="container">
 
-    <div class="title">
-        Nossa família está crescendo
-    </div>
+    <!-- desenhos decorativos -->
+    <div class="decor decor1">🧸</div>
+    <div class="decor decor2">🎀</div>
+    <div class="decor decor3">🍼</div>
+    <div class="decor decor4">🧢</div>
+    <div class="decor decor5">☁️</div>
+    <div class="decor decor6">⭐</div>
+
+    <h1>Nossa família está crescendo 💕</h1>
 
     <div class="subtitle">
-        e queremos compartilhar com você<br>
+        E queremos compartilhar com você
+        <br>
         se virá <strong>Mateus ou Alice</strong>...
     </div>
 
-    <div class="board" id="board"></div>
-
-    <div class="final" id="final">
-        <h2>É ALICE! 🩷</h2>
-        <p>
-            Uma princesinha está chegando
-            para completar nossa família. ✨
-        </p>
+    <div class="instructions">
+        Raspe os quadrinhos e descubra a surpresa ✨
     </div>
 
-</main>
+    <div class="game" id="game"></div>
+
+    <div class="reveal" id="reveal">
+        <div class="small">A nossa maior surpresa é...</div>
+
+        <h2>ALICE</h2>
+
+        <p>
+            É MENINA! 🎀<br>
+            Nossa pequena está chegando!
+        </p>
+
+        <div class="heart">🩷</div>
+    </div>
+
+</div>
 
 <script>
 
-const board = document.getElementById("board");
-const final = document.getElementById("final");
-
 /*
-    POSIÇÕES:
+====================================================
+ CONFIGURAÇÃO DO JOGO
+====================================================
 
-       1     2     3
-       4     5     6
-       7     8     9
+A grade possui 9 quadrinhos.
 
-    A SEQUÊNCIA VENCEDORA É:
+A sequência vencedora será SEMPRE:
+posição 2
+posição 5
+posição 8
 
-       🩵    🩷    🩵
-       🩵    🩷    🩵
-       🩷    🩷    🩵
+Ou seja:
 
-    Portanto:
-    2 + 5 + 8 = MENINA
+💙   🩷   💙
+🩷   🩷   💙
+💙   🩷   🩷
+
+A coluna do meio possui as 3 rosas.
+
+Não existe nenhuma sequência de 3 azuis.
+====================================================
 */
 
-// 0 = menino
-// 1 = menina
+const simbolos = [
 
-const resultados = [
-    "🩵",  // 1
-    "🩷",  // 2  ← VENCEDOR
-    "🩵",  // 3
+    "💙", "🩷", "💙",
 
-    "🩵",  // 4
-    "🩷",  // 5  ← VENCEDOR
-    "🩵",  // 6
+    "🩷", "🩷", "💙",
 
-    "🩷",  // 7
-    "🩷",  // 8  ← VENCEDOR
-    "🩵"   // 9
+    "💙", "🩷", "🩷"
+
 ];
 
-const vencedores = [1, 4, 7];
+const game = document.getElementById("game");
+const reveal = document.getElementById("reveal");
 
-let revelados = [];
+let raspados = 0;
+let revelado = false;
 
-resultados.forEach((simbolo, index) => {
+/*
+Posições que formam a sequência rosa vencedora.
+*/
 
-    const cell = document.createElement("div");
-    cell.className = "cell";
+const vencedoras = [1, 4, 7];
 
-    const result = document.createElement("div");
-    result.className = "result";
+const cards = [];
 
-    result.innerHTML = `
-        <div class="symbol">${simbolo}</div>
-        <div class="label">SURPRESA</div>
-    `;
+/*
+Criar os 9 quadrinhos
+*/
 
-    cell.appendChild(result);
+simbolos.forEach((simbolo, index) => {
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const symbol = document.createElement("div");
+    symbol.className = "symbol";
+    symbol.textContent = simbolo;
 
     const canvas = document.createElement("canvas");
-    cell.appendChild(canvas);
 
-    board.appendChild(cell);
+    card.appendChild(symbol);
+    card.appendChild(canvas);
+    game.appendChild(card);
+
+    cards.push({
+        card,
+        canvas,
+        symbol,
+        raspado: false
+    });
+
+    prepararRaspadinha(canvas, index);
+
+});
+
+
+/*
+====================================================
+FUNÇÃO DA RASPADINHA
+====================================================
+*/
+
+function prepararRaspadinha(canvas, index) {
 
     const ctx = canvas.getContext("2d");
 
-    let desenhando = false;
-    let concluido = false;
-
     function ajustarCanvas() {
 
-        const tamanho = cell.getBoundingClientRect().width;
-        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
 
-        canvas.width = tamanho * dpr;
-        canvas.height = tamanho * dpr;
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
 
-        canvas.style.width = tamanho + "px";
-        canvas.style.height = tamanho + "px";
+        ctx.scale(
+            window.devicePixelRatio,
+            window.devicePixelRatio
+        );
 
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const largura = rect.width;
+        const altura = rect.height;
+
+        /*
+        Fundo dourado elegante
+        */
 
         const gradiente = ctx.createLinearGradient(
             0,
             0,
-            tamanho,
-            tamanho
+            largura,
+            altura
         );
 
-        gradiente.addColorStop(0, "#f4d77a");
-        gradiente.addColorStop(.35, "#c99b28");
-        gradiente.addColorStop(.65, "#e8c75d");
-        gradiente.addColorStop(1, "#a97b13");
+        gradiente.addColorStop(0, "#d8c29b");
+        gradiente.addColorStop(0.5, "#c8ad7b");
+        gradiente.addColorStop(1, "#e1cda9");
 
         ctx.fillStyle = gradiente;
+        ctx.fillRect(0, 0, largura, altura);
 
-        ctx.beginPath();
+        /*
+        Pequenos brilhos
+        */
 
-        ctx.arc(
-            tamanho / 2,
-            tamanho / 2,
-            tamanho / 2,
-            0,
-            Math.PI * 2
-        );
+        ctx.fillStyle = "rgba(255,255,255,0.25)";
 
-        ctx.fill();
+        for (let i = 0; i < 25; i++) {
 
-        ctx.globalCompositeOperation = "source-over";
+            const x = Math.random() * largura;
+            const y = Math.random() * altura;
+            const r = Math.random() * 2 + 0.5;
 
-        ctx.fillStyle = "rgba(255,255,255,.28)";
-        ctx.font = "bold 13px Georgia";
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        /*
+        Texto da raspadinha
+        */
+
+        ctx.fillStyle = "rgba(255,255,255,0.92)";
+        ctx.font = "16px Georgia";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
         ctx.fillText(
-            "RASPE",
-            tamanho / 2,
-            tamanho / 2
+            "raspe aqui ✨",
+            largura / 2,
+            altura / 2
         );
     }
 
+    ajustarCanvas();
+
+    let raspando = false;
+
     function raspar(e) {
 
-        e.preventDefault();
+        if (!raspando) return;
 
         const rect = canvas.getBoundingClientRect();
 
-        let x;
-        let y;
+        let x, y;
 
-        if (e.touches && e.touches.length) {
+        if (e.touches) {
 
             x = e.touches[0].clientX - rect.left;
             y = e.touches[0].clientY - rect.top;
@@ -349,19 +430,47 @@ resultados.forEach((simbolo, index) => {
         ctx.arc(
             x,
             y,
-            22,
+            25,
             0,
             Math.PI * 2
         );
 
         ctx.fill();
 
-        verificarRaspagem();
+        verificarAreaRaspada();
     }
 
-    function verificarRaspagem() {
+    function iniciar(e) {
 
-        if (concluido) return;
+        raspando = true;
+        raspar(e);
+    }
+
+    function parar() {
+
+        raspando = false;
+    }
+
+    canvas.addEventListener("mousedown", iniciar);
+    canvas.addEventListener("mousemove", raspar);
+    canvas.addEventListener("mouseup", parar);
+    canvas.addEventListener("mouseleave", parar);
+
+    canvas.addEventListener("touchstart", iniciar, {
+        passive: true
+    });
+
+    canvas.addEventListener("touchmove", raspar, {
+        passive: true
+    });
+
+    canvas.addEventListener("touchend", parar);
+
+    function verificarAreaRaspada() {
+
+        /*
+        Verifica quanto do canvas foi raspado.
+        */
 
         const largura = canvas.width;
         const altura = canvas.height;
@@ -375,11 +484,7 @@ resultados.forEach((simbolo, index) => {
 
         let transparentes = 0;
 
-        for (
-            let i = 3;
-            i < dados.length;
-            i += 4
-        ) {
+        for (let i = 3; i < dados.length; i += 4) {
 
             if (dados[i] < 80) {
                 transparentes++;
@@ -390,125 +495,118 @@ resultados.forEach((simbolo, index) => {
             transparentes / (dados.length / 4);
 
         /*
-            Consideramos o círculo raspado
-            quando aproximadamente 35% foi removido.
+        Quando aproximadamente 35% estiver raspado,
+        consideramos aquele quadrinho descoberto.
         */
 
-        if (porcentagem > 0.35) {
+        if (
+            porcentagem > 0.35 &&
+            !cards[index].raspado
+        ) {
 
-            concluido = true;
+            cards[index].raspado = true;
+            raspados++;
 
-            canvas.style.pointerEvents = "none";
+            canvas.style.transition =
+                "opacity .5s ease";
 
-            if (!revelados.includes(index)) {
-                revelados.push(index);
-            }
+            canvas.style.opacity = "0";
 
-            verificarSequencia();
+            verificarVitoria();
         }
     }
+}
 
-    function verificarSequencia() {
 
-        /*
-            Só interessa saber se os círculos
-            2, 5 e 8 foram revelados.
+/*
+====================================================
+VERIFICAR VITÓRIA
+====================================================
+*/
 
-            No código os índices são:
-            1, 4 e 7
-        */
+function verificarVitoria() {
 
-        const ganhou = vencedores.every(
-            posicao => revelados.includes(posicao)
-        );
+    if (revelado) return;
 
-        if (ganhou) {
+    /*
+    Confirma que os 3 quadrinhos rosas
+    foram raspados.
+    */
 
-            setTimeout(() => {
+    const ganhou = vencedoras.every(
+        posicao => cards[posicao].raspado
+    );
 
-                final.classList.add("show");
+    if (ganhou) {
 
-            }, 500);
-        }
+        revelado = true;
+
+        setTimeout(() => {
+
+            reveal.classList.add("show");
+
+            criarConfetes();
+
+            reveal.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+        }, 700);
     }
+}
 
-    // MOUSE
 
-    canvas.addEventListener(
-        "mousedown",
-        (e) => {
+/*
+====================================================
+CONFETES DA REVELAÇÃO
+====================================================
+*/
 
-            desenhando = true;
-            raspar(e);
+function criarConfetes() {
 
-        }
-    );
+    const simbolosConfete = [
+        "🩷",
+        "🎀",
+        "✨",
+        "💕",
+        "🌸"
+    ];
 
-    canvas.addEventListener(
-        "mousemove",
-        (e) => {
+    for (let i = 0; i < 45; i++) {
 
-            if (desenhando) {
-                raspar(e);
-            }
+        const confete =
+            document.createElement("div");
 
-        }
-    );
+        confete.className = "confetti";
 
-    window.addEventListener(
-        "mouseup",
-        () => {
+        confete.textContent =
+            simbolosConfete[
+                Math.floor(
+                    Math.random() *
+                    simbolosConfete.length
+                )
+            ];
 
-            desenhando = false;
+        confete.style.left =
+            Math.random() * 100 + "vw";
 
-        }
-    );
+        confete.style.fontSize =
+            (Math.random() * 14 + 12) + "px";
 
-    // CELULAR
+        confete.style.animationDuration =
+            (Math.random() * 3 + 3) + "s";
 
-    canvas.addEventListener(
-        "touchstart",
-        (e) => {
+        confete.style.animationDelay =
+            Math.random() * 1.5 + "s";
 
-            desenhando = true;
-            raspar(e);
+        document.body.appendChild(confete);
 
-        },
-        { passive: false }
-    );
-
-    canvas.addEventListener(
-        "touchmove",
-        (e) => {
-
-            if (desenhando) {
-                raspar(e);
-            }
-
-        },
-        { passive: false }
-    );
-
-    canvas.addEventListener(
-        "touchend",
-        () => {
-
-            desenhando = false;
-
-        }
-    );
-
-    setTimeout(
-        ajustarCanvas,
-        100
-    );
-
-    window.addEventListener(
-        "resize",
-        ajustarCanvas
-    );
-
-});
+        setTimeout(() => {
+            confete.remove();
+        }, 6000);
+    }
+}
 
 </script>
 
