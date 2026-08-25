@@ -1,85 +1,449 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Raspadinha - Mateus ou Alice</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background: #f6eeee; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; font-family: Georgia, serif; }
-        .card { width: min(100%, 520px); height: 100vh; max-height: 900px; position: relative; background-image: url('fundo.png.png'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 12%; }
-        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 14px; width: 100%; max-width: 390px; margin: 0 auto; padding: 0 25px; }
-        .cell { aspect-ratio: 1; position: relative; user-select: none; -webkit-user-select: none; touch-action: none; display: flex; justify-content: center; align-items: center; background-size: 65%; background-position: center; background-repeat: no-repeat; }
-        .canvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; touch-action: none; cursor: pointer; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Nossa Família está crescendo</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    background: linear-gradient(180deg, #f8eeee, #f2e3e3);
+    font-family: Georgia, "Times New Roman", serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.card {
+    width: 100%;
+    max-width: 520px;
+    min-height: 100vh;
+    padding: 45px 20px 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.title {
+    margin-top: 15px;
+    color: #76645e;
+    font-size: 25px;
+    line-height: 1.25;
+    font-weight: normal;
+}
+
+.subtitle {
+    margin: 12px auto 25px;
+    max-width: 360px;
+    color: #927e77;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+.board {
+    width: min(92vw, 390px);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.cell {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #fff9f7;
+    box-shadow:
+        0 5px 12px rgba(100, 70, 60, 0.15),
+        inset 0 0 0 2px rgba(255,255,255,.8);
+}
+
+.result {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #fffaf8, #f4dddd);
+}
+
+.result .symbol {
+    font-size: 38px;
+    margin-bottom: 3px;
+}
+
+.result .word {
+    font-size: 13px;
+    color: #92736d;
+    letter-spacing: 1px;
+}
+
+canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+    cursor: pointer;
+}
+
+.final {
+    display: none;
+    margin-top: 28px;
+    animation: aparecer .8s ease;
+}
+
+.final.show {
+    display: block;
+}
+
+.final h2 {
+    margin: 0;
+    color: #8d6d67;
+    font-size: 27px;
+    font-weight: normal;
+}
+
+.final p {
+    margin-top: 8px;
+    color: #9a817b;
+    font-size: 16px;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-height: 700px) {
+
+    .card {
+        padding-top: 25px;
+    }
+
+    .title {
+        font-size: 22px;
+    }
+
+    .subtitle {
+        margin-bottom: 15px;
+        font-size: 15px;
+    }
+
+    .board {
+        gap: 10px;
+    }
+}
+</style>
 </head>
+
 <body>
-    <main class="card">
-        <div class="board" id="board"></div>
-    </main>
 
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const board = document.getElementById('board');
-            const premios = ['mateus', 'alice', 'mateus', 'alice', 'mateus', 'alice', 'mateus', 'alice', 'mateus'];
-            
-            const imagensResultado = {
-                mateus: 'https://icons8.com', 
-                alice: 'https://icons8.com'    
-            };
+<main class="card">
 
-            premios.forEach(premio => {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.style.backgroundImage = url('${imagensResultado[premio]}');
-                
-                const canvas = document.createElement('canvas');
-                canvas.className = 'canvas';
-                cell.appendChild(canvas);
-                board.appendChild(cell);
+    <div class="title">
+        Nossa família está crescendo
+    </div>
 
-                const ctx = canvas.getContext('2d');
-                
-                function initCanvas() {
-                    const size = canvas.offsetWidth || 110;
-                    canvas.width = size;
-                    canvas.height = size;
-                    
-                    const gradient = ctx.createLinearGradient(0, 0, size, size);
-                    gradient.addColorStop(0, '#e5c158');
-                    gradient.addColorStop(0.5, '#b8860b');
-                    gradient.addColorStop(1, '#f3e195');
-                    
-                    ctx.fillStyle = gradient;
-                    ctx.beginPath();
-                    ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+    <div class="subtitle">
+        e queremos compartilhar com você<br>
+        se virá <strong>Mateus ou Alice</strong>...
+    </div>
 
-                function scratch(e) {
-                    const rect = canvas.getBoundingClientRect();
-                    const clientX = e.touches && e.touches.length ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.touches && e.touches.length ? e.touches[0].clientY : e.clientY;
-                    const x = clientX - rect.left;
-                    const y = clientY - rect.top;
+    <div class="board" id="board"></div>
 
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.beginPath();
-                    ctx.arc(x, y, 20, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+    <div class="final" id="final">
+        <h2>É ALICE! 🩷</h2>
+        <p>Uma princesinha está chegando para completar nossa família.</p>
+    </div>
 
-                canvas.addEventListener('mousemove', (e) => { if(e.buttons === 1) scratch(e); });
-                canvas.addEventListener('touchstart', (e) => { scratch(e); });
-                canvas.addEventListener('touchmove', (e) => {
-                    e.preventDefault();
-                    scratch(e);
-                }, { passive: false });
-                
-                setTimeout(initCanvas, 300);
-                window.addEventListener('resize', initCanvas);
-            });
-        });
-    </script>
+</main>
+
+<script>
+
+const board = document.getElementById("board");
+const final = document.getElementById("final");
+
+/*
+    Todos os círculos serão Alice.
+    O nome NÃO fica escrito no círculo dourado.
+    Ele só aparece depois que a raspadinha for concluída.
+*/
+
+const resultados = [
+    "🩷",
+    "🌸",
+    "🎀",
+    "🩷",
+    "🌷",
+    "🎀",
+    "🩷",
+    "🌸",
+    "🎀"
+];
+
+let raspados = 0;
+
+resultados.forEach((simbolo, index) => {
+
+    const cell = document.createElement("div");
+    cell.className = "cell";
+
+    const result = document.createElement("div");
+    result.className = "result";
+
+    result.innerHTML = `
+        <div class="symbol">${simbolo}</div>
+        <div class="word">SURPRESA</div>
+    `;
+
+    cell.appendChild(result);
+
+    const canvas = document.createElement("canvas");
+    cell.appendChild(canvas);
+
+    board.appendChild(cell);
+
+    const ctx = canvas.getContext("2d");
+
+    let desenhando = false;
+    let jaContabilizado = false;
+
+    function ajustarCanvas() {
+
+        const tamanho = cell.getBoundingClientRect().width;
+
+        const dpr = window.devicePixelRatio || 1;
+
+        canvas.width = tamanho * dpr;
+        canvas.height = tamanho * dpr;
+
+        canvas.style.width = tamanho + "px";
+        canvas.style.height = tamanho + "px";
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const gradiente = ctx.createLinearGradient(
+            0,
+            0,
+            tamanho,
+            tamanho
+        );
+
+        gradiente.addColorStop(0, "#f4d77a");
+        gradiente.addColorStop(.35, "#c99b28");
+        gradiente.addColorStop(.65, "#e8c75d");
+        gradiente.addColorStop(1, "#a97b13");
+
+        ctx.fillStyle = gradiente;
+
+        ctx.beginPath();
+        ctx.arc(
+            tamanho / 2,
+            tamanho / 2,
+            tamanho / 2,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        ctx.globalCompositeOperation = "source-over";
+
+        ctx.fillStyle = "rgba(255,255,255,.22)";
+        ctx.font = "bold 13px Georgia";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        ctx.fillText(
+            "RASPE",
+            tamanho / 2,
+            tamanho / 2
+        );
+    }
+
+    function raspar(e) {
+
+        e.preventDefault();
+
+        const rect = canvas.getBoundingClientRect();
+
+        let x;
+        let y;
+
+        if (e.touches && e.touches.length) {
+
+            x = e.touches[0].clientX - rect.left;
+            y = e.touches[0].clientY - rect.top;
+
+        } else {
+
+            x = e.clientX - rect.left;
+            y = e.clientY - rect.top;
+
+        }
+
+        ctx.globalCompositeOperation = "destination-out";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            22,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        verificarRaspagem();
+
+    }
+
+    function verificarRaspagem() {
+
+        if (jaContabilizado) return;
+
+        const largura = canvas.width;
+        const altura = canvas.height;
+
+        const dados = ctx.getImageData(
+            0,
+            0,
+            largura,
+            altura
+        ).data;
+
+        let transparentes = 0;
+
+        for (let i = 3; i < dados.length; i += 4) {
+
+            if (dados[i] < 80) {
+                transparentes++;
+            }
+        }
+
+        const porcentagem =
+            transparentes / (dados.length / 4);
+
+        /*
+            Quando aproximadamente 35% do círculo
+            estiver raspado, consideramos concluído.
+        */
+
+        if (porcentagem > 0.35) {
+
+            jaContabilizado = true;
+            raspados++;
+
+            canvas.style.pointerEvents = "none";
+
+            if (raspados >= 5) {
+
+                setTimeout(() => {
+
+                    final.classList.add("show");
+
+                }, 500);
+
+            }
+
+        }
+    }
+
+    canvas.addEventListener(
+        "mousedown",
+        (e) => {
+            desenhando = true;
+            raspar(e);
+        }
+    );
+
+    canvas.addEventListener(
+        "mousemove",
+        (e) => {
+
+            if (desenhando) {
+                raspar(e);
+            }
+
+        }
+    );
+
+    window.addEventListener(
+        "mouseup",
+        () => {
+            desenhando = false;
+        }
+    );
+
+    canvas.addEventListener(
+        "touchstart",
+        (e) => {
+            desenhando = true;
+            raspar(e);
+        },
+        { passive: false }
+    );
+
+    canvas.addEventListener(
+        "touchmove",
+        (e) => {
+
+            if (desenhando) {
+                raspar(e);
+            }
+
+        },
+        { passive: false }
+    );
+
+    canvas.addEventListener(
+        "touchend",
+        () => {
+            desenhando = false;
+        }
+    );
+
+    setTimeout(ajustarCanvas, 100);
+
+    window.addEventListener(
+        "resize",
+        ajustarCanvas
+    );
+
+});
+
+</script>
+
 </body>
 </html>
